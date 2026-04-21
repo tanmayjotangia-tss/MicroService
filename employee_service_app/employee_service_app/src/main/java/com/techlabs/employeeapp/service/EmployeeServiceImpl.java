@@ -32,7 +32,7 @@ public class EmployeeServiceImpl implements EmployeeService{
     }
 
     @Override
-    public EmployeeAPIResponse getEmployeeAPIResponse(Long employeeId) {
+    public EmployeeAPIResponse getEmployeeWithDepartment(Long employeeId) {
         EmployeeDto employee=getEmployee(employeeId);
         ResponseEntity<DepartmentDto> departments= restTemplate.getForEntity("http://localhost:8080/deptapp/departments/"+ employee.getDepartmentId(),DepartmentDto.class);
         EmployeeAPIResponse response=new EmployeeAPIResponse();

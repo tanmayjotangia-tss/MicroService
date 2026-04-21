@@ -7,5 +7,5 @@ import com.techlabs.employeeapp.dto.EmployeeDto;
 public interface EmployeeService {
 
     public EmployeeDto getEmployee(Long employeeId);
-    public EmployeeAPIResponse getEmployeeAPIResponse(Long employeeId);
+    public EmployeeAPIResponse getEmployeeWithDepartment(Long employeeId);
 }

@@ -2,7 +2,6 @@ package com.techlabs.employeeapp.controller;
 
 import com.techlabs.employeeapp.dto.EmployeeAPIResponse;
 import com.techlabs.employeeapp.dto.EmployeeDto;
-import com.techlabs.employeeapp.entity.Employee;
 import com.techlabs.employeeapp.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +26,6 @@ public class EmployeeController {
     @GetMapping("/employees/{employeeId}/department")
     public ResponseEntity<EmployeeAPIResponse> getEmployeeWithDepartment(@PathVariable Long employeeId)
     {
-        return ResponseEntity.ok(employeeService.getEmployeeAPIResponse(employeeId));
+        return ResponseEntity.ok(employeeService.getEmployeeWithDepartment(employeeId));
     }
 }
