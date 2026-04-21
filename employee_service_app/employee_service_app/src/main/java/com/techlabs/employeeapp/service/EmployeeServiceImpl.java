@@ -10,13 +10,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 @RequiredArgsConstructor
 public class EmployeeServiceImpl implements EmployeeService{
 
     private final EmployeeRepository employeeRepository;
-    private final RestTemplate restTemplate;
+//    private final RestTemplate restTemplate;
+    private final WebClient webClient;
 
     @Override
     public EmployeeDto getEmployee(Long employeeId) {
@@ -34,10 +36,17 @@ public class EmployeeServiceImpl implements EmployeeService{
     @Override
     public EmployeeAPIResponse getEmployeeWithDepartment(Long employeeId) {
         EmployeeDto employee=getEmployee(employeeId);
-        ResponseEntity<DepartmentDto> departments= restTemplate.getForEntity("http://localhost:8080/deptapp/departments/"+ employee.getDepartmentId(),DepartmentDto.class);
+//        ResponseEntity<DepartmentDto> departments= restTemplate.getForEntity("http://localhost:8080/deptapp/departments/"+ employee.getDepartmentId(),DepartmentDto.class);
+
+        DepartmentDto departments = webClient.get()
+                .uri("http://localhost:8080/deptapp/departments/"+ employee.getDepartmentId())
+                .retrieve()
+                .bodyToMono(DepartmentDto.class)
+                .block();
+
         EmployeeAPIResponse response=new EmployeeAPIResponse();
         response.setEmployeeDto(employee);
-        response.setDepartmentDto(departments.getBody());
+        response.setDepartmentDto(departments);
         return response;
     }
 }

@@ -12,6 +12,6 @@ public class EmployeeConfig {
     RestTemplate restTemplate(){
         return new RestTemplate();
     }
-    
-    WebClient
+    @Bean
+    WebClient webClient(){return WebClient.builder().build();}
 }
