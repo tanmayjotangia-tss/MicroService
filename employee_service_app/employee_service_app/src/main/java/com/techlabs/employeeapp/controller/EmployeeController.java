@@ -5,10 +5,9 @@ import com.techlabs.employeeapp.dto.EmployeeDto;
 import com.techlabs.employeeapp.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/empapp")
@@ -27,5 +26,23 @@ public class EmployeeController {
     public ResponseEntity<EmployeeAPIResponse> getEmployeeWithDepartment(@PathVariable Long employeeId)
     {
         return ResponseEntity.ok(employeeService.getEmployeeWithDepartment(employeeId));
+    }
+
+    @PutMapping("/employees/{employeeId}")
+    public ResponseEntity<EmployeeDto> changeDepartment(@PathVariable Long employeeId,@RequestParam Long departmentId)
+    {
+        return ResponseEntity.ok(employeeService.changeDepartment(employeeId, departmentId));
+    }
+
+    @PostMapping
+    public ResponseEntity<EmployeeDto> addEmployee(@RequestBody EmployeeDto employeeDto)
+    {
+        return ResponseEntity.ok(employeeService.createEmployee(employeeDto));
+    }
+
+    @GetMapping("/employees")
+    public ResponseEntity<List<EmployeeDto>> getAllEmployees()
+    {
+        return ResponseEntity.ok(employeeService.getAllEmployees());
     }
 }

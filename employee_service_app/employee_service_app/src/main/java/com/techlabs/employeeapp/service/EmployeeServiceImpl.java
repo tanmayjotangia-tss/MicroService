@@ -12,6 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class EmployeeServiceImpl implements EmployeeService{
@@ -54,5 +57,51 @@ public class EmployeeServiceImpl implements EmployeeService{
         response.setEmployeeDto(employee);
         response.setDepartmentDto(departments);
         return response;
+    }
+
+    @Override
+    public EmployeeDto changeDepartment(Long employeeId, Long departmentId) {
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(()-> new RuntimeException("ID not found: "+employeeId));
+
+        employee.setDepartmentId(departmentId);
+        employeeRepository.save(employee);
+        EmployeeDto employeeDto=new EmployeeDto();
+        employeeDto.setEmployeeId(employee.getEmployeeId());
+        employeeDto.setName(employee.getName());
+        employeeDto.setSalary(employee.getSalary());
+        employeeDto.setDepartmentId(employee.getDepartmentId());
+        return employeeDto;
+    }
+
+    @Override
+    public EmployeeDto createEmployee(EmployeeDto employeeDto) {
+        Employee employee=new Employee();
+        employee.setName(employeeDto.getName());
+        employee.setSalary(employeeDto.getSalary());
+        employee.setDepartmentId(employeeDto.getDepartmentId());
+        employeeRepository.save(employee);
+
+        EmployeeDto employeeDto1=new EmployeeDto();
+        employeeDto1.setEmployeeId(employee.getEmployeeId());
+        employeeDto1.setName(employee.getName());
+        employeeDto1.setSalary(employee.getSalary());
+        employeeDto1.setDepartmentId(employee.getDepartmentId());
+        return employeeDto1;
+    }
+
+    @Override
+    public List<EmployeeDto> getAllEmployees() {
+         List<Employee> employees = employeeRepository.findAll();
+         List<EmployeeDto> employeeDtos=new ArrayList<>();
+         for(Employee employee:employees){
+             EmployeeDto employeeDto=new EmployeeDto();
+             employeeDto.setEmployeeId(employee.getEmployeeId());
+             employeeDto.setName(employee.getName());
+             employeeDto.setSalary(employee.getSalary());
+             employeeDto.setDepartmentId(employee.getDepartmentId());
+             employeeDtos.add(employeeDto);
+         }
+         return employeeDtos;
     }
 }
