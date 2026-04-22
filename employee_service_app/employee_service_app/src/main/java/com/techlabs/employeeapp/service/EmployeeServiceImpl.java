@@ -18,8 +18,8 @@ public class EmployeeServiceImpl implements EmployeeService{
 
     private final EmployeeRepository employeeRepository;
 //    private final RestTemplate restTemplate;
-    private final WebClient webClient;
-
+//    private final WebClient webClient;
+    private final DepartmentApiClient departmentApiClient;
     @Override
     public EmployeeDto getEmployee(Long employeeId) {
         Employee employee = employeeRepository.findById(employeeId)
@@ -36,13 +36,19 @@ public class EmployeeServiceImpl implements EmployeeService{
     @Override
     public EmployeeAPIResponse getEmployeeWithDepartment(Long employeeId) {
         EmployeeDto employee=getEmployee(employeeId);
+
+        // RestTemplate
 //        ResponseEntity<DepartmentDto> departments= restTemplate.getForEntity("http://localhost:8080/deptapp/departments/"+ employee.getDepartmentId(),DepartmentDto.class);
 
-        DepartmentDto departments = webClient.get()
-                .uri("http://localhost:8080/deptapp/departments/"+ employee.getDepartmentId())
-                .retrieve()
-                .bodyToMono(DepartmentDto.class)
-                .block();
+        // WebClient
+//        DepartmentDto departments = webClient.get()
+//                .uri("http://localhost:8080/deptapp/departments/"+ employee.getDepartmentId())
+//                .retrieve()
+//                .bodyToMono(DepartmentDto.class)
+//                .block();
+
+        // OpenFeign
+        DepartmentDto departments = departmentApiClient.getDepartment(employee.getDepartmentId());
 
         EmployeeAPIResponse response=new EmployeeAPIResponse();
         response.setEmployeeDto(employee);
