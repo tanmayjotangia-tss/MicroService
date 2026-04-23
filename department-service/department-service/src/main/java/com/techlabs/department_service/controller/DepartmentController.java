@@ -1,5 +1,6 @@
 package com.techlabs.department_service.controller;
 
+import com.techlabs.department_service.config.DeptConfig;
 import com.techlabs.department_service.dto.DepartmentDto;
 import com.techlabs.department_service.dto.EmployeeDto;
 import com.techlabs.department_service.service.DepartmentService;
@@ -19,6 +20,7 @@ import java.util.List;
 public class DepartmentController {
 
     private final DepartmentService departmentService;
+    private final DeptConfig deptConfig;
 
     @GetMapping("/departments/{departmentId}")
     public ResponseEntity<DepartmentDto> getDepartment(@PathVariable Long departmentId)
@@ -30,5 +32,10 @@ public class DepartmentController {
     public ResponseEntity<List<EmployeeDto>> getEmployessByDepartmentId(@PathVariable Long departmentId)
     {
         return ResponseEntity.ok(departmentService.getEmployees(departmentId));
+    }
+
+    @GetMapping("message")
+    public String getMessage(){
+        return deptConfig.getMessage();
     }
 }
