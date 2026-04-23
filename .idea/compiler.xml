@@ -27,12 +27,14 @@
         <outputRelativeToContentRoot value="true" />
         <module name="api-gateway" />
         <module name="service-registory" />
+        <module name="config-server" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="api-gateway" options="-parameters" />
+      <module name="config-server" options="-parameters" />
       <module name="department-service" options="-parameters" />
       <module name="employee_service_app" options="-parameters" />
       <module name="service-registory" options="-parameters" />
