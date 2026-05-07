@@ -6,6 +6,7 @@ import com.techlabs.employeeapp.dto.EmployeeAPIResponse;
 import com.techlabs.employeeapp.dto.EmployeeDto;
 import com.techlabs.employeeapp.entity.Employee;
 import com.techlabs.employeeapp.repository.EmployeeRepository;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -36,28 +37,28 @@ public class EmployeeServiceImpl implements EmployeeService{
         return dto;
     }
 
-    @Override
-    public EmployeeAPIResponse getEmployeeWithDepartment(Long employeeId) {
-        EmployeeDto employee=getEmployee(employeeId);
-
-        // RestTemplate
-//        ResponseEntity<DepartmentDto> departments= restTemplate.getForEntity("http://localhost:8080/deptapp/departments/"+ employee.getDepartmentId(),DepartmentDto.class);
-
-        // WebClient
-//        DepartmentDto departments = webClient.get()
-//                .uri("http://localhost:8080/deptapp/departments/"+ employee.getDepartmentId())
-//                .retrieve()
-//                .bodyToMono(DepartmentDto.class)
-//                .block();
-
-        // OpenFeign
-        DepartmentDto departments = departmentApiClient.getDepartment(employee.getDepartmentId());
-
-        EmployeeAPIResponse response=new EmployeeAPIResponse();
-        response.setEmployeeDto(employee);
-        response.setDepartmentDto(departments);
-        return response;
-    }
+//    @Override
+//    public EmployeeAPIResponse getEmployeeWithDepartment(Long employeeId) {
+//        EmployeeDto employee=getEmployee(employeeId);
+//
+//        // RestTemplate
+////        ResponseEntity<DepartmentDto> departments= restTemplate.getForEntity("http://localhost:8080/deptapp/departments/"+ employee.getDepartmentId(),DepartmentDto.class);
+//
+//        // WebClient
+////        DepartmentDto departments = webClient.get()
+////                .uri("http://localhost:8080/deptapp/departments/"+ employee.getDepartmentId())
+////                .retrieve()
+////                .bodyToMono(DepartmentDto.class)
+////                .block();
+//
+//        // OpenFeign
+//        DepartmentDto departments = departmentApiClient.getDepartment(employee.getDepartmentId());
+//
+//        EmployeeAPIResponse response=new EmployeeAPIResponse();
+//        response.setEmployeeDto(employee);
+//        response.setDepartmentDto(departments);
+//        return response;
+//    }
 
     @Override
     public EmployeeDto changeDepartment(Long employeeId, Long departmentId) {
@@ -103,5 +104,46 @@ public class EmployeeServiceImpl implements EmployeeService{
              employeeDtos.add(employeeDto);
          }
          return employeeDtos;
+    }
+
+    @Override
+    @CircuitBreaker(name = "departmentService", fallbackMethod = "getDepartmentFallback")
+    public EmployeeAPIResponse getEmployeeWithDepartment(Long employeeId) {
+
+        EmployeeDto employee = getEmployee(employeeId);
+
+//        ResponseEntity<DepartmentDto> departmentResponse =  restTemplate.getForEntity("http://localhost:8080/deptapp/departments/"+employee.getDepartmentId(),
+//                DepartmentDto.class);
+
+//        DepartmentDto department= webClient.get()
+//                .uri("http://localhost:8080/deptapp/departments/"+employee.getDepartmentId())
+//                .retrieve()
+//                .bodyToMono(DepartmentDto.class)
+//                .block();
+
+        DepartmentDto department = departmentApiClient.getDepartment(employee.getDepartmentId());
+
+
+        EmployeeAPIResponse response = new EmployeeAPIResponse();
+        response.setEmployeeDto(employee);
+        response.setDepartmentDto(department);
+
+        return response;
+
+    }
+
+    public EmployeeAPIResponse getDepartmentFallback(Long employeeId, Exception exception) {
+        EmployeeDto employee = getEmployee(employeeId);
+
+        DepartmentDto department = new DepartmentDto();
+        department.setDepartmentId(employee.getDepartmentId());
+        department.setDepartmentName("Information Technology");
+
+
+        EmployeeAPIResponse response = new EmployeeAPIResponse();
+        response.setEmployeeDto(employee);
+        response.setDepartmentDto(department);
+
+        return response;
     }
 }
